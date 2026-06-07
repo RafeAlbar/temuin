@@ -1,0 +1,672 @@
+package com.example.temuin
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.outlined.ChevronRight
+import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.HelpOutline
+import androidx.compose.material.icons.outlined.History
+import androidx.compose.material.icons.outlined.Interests
+import androidx.compose.material.icons.outlined.Logout
+import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+
+private data class ChatPreview(
+    val name: String,
+    val message: String,
+    val time: String,
+    val initials: String,
+    val online: Boolean,
+    val unreadCount: Int = 0,
+    val colors: List<Color>
+)
+
+private data class OnlineFriend(
+    val name: String,
+    val initials: String,
+    val colors: List<Color>
+)
+
+@Composable
+fun MessagesPlaceholderScreen(
+    onHomeClick: () -> Unit = {},
+    onFriendsClick: () -> Unit = {},
+    onActivitiesClick: () -> Unit = {},
+    onMessagesClick: () -> Unit = {},
+    onProfileClick: () -> Unit = {}
+) {
+    val bg = Color(0xFFF6F8FC)
+    val blue = Color(0xFF006AA6)
+    val textDark = Color(0xFF20242C)
+    val textGray = Color(0xFF707987)
+
+    val onlineFriends = listOf(
+        OnlineFriend("Bayu A", "BA", listOf(Color(0xFFBDE7FF), Color(0xFF0670A8))),
+        OnlineFriend("Sekar P", "SP", listOf(Color(0xFFFFD9E1), Color(0xFFD94D73))),
+        OnlineFriend("Seno", "SN", listOf(Color(0xFFE7EAF1), Color(0xFF697386)))
+    )
+
+    val chats = listOf(
+        ChatPreview(
+            name = "Bayu A",
+            message = "Otw ya! Tunggu di lobi.",
+            time = "14:20",
+            initials = "BA",
+            online = true,
+            unreadCount = 2,
+            colors = listOf(Color(0xFFBDE7FF), Color(0xFF0670A8))
+        ),
+        ChatPreview(
+            name = "Sekar P",
+            message = "Sampai jam berapa event nya?",
+            time = "Kemarin",
+            initials = "SP",
+            online = true,
+            colors = listOf(Color(0xFFFFD9E1), Color(0xFFD94D73))
+        ),
+        ChatPreview(
+            name = "Seno",
+            message = "Thanks info nya bro.",
+            time = "Senin",
+            initials = "SN",
+            online = false,
+            unreadCount = 1,
+            colors = listOf(Color(0xFFE7EAF1), Color(0xFF697386))
+        )
+    )
+
+    Scaffold(
+        containerColor = bg,
+        bottomBar = {
+            TemuinBottomBar(
+                selectedMenu = "Pesan",
+                onHomeClick = onHomeClick,
+                onFriendsClick = onFriendsClick,
+                onActivitiesClick = onActivitiesClick,
+                onMessagesClick = onMessagesClick,
+                onProfileClick = onProfileClick
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {},
+                containerColor = blue,
+                contentColor = Color.White,
+                shape = RoundedCornerShape(14.dp),
+                modifier = Modifier.size(64.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Edit,
+                    contentDescription = "Pesan baru",
+                    modifier = Modifier.size(30.dp)
+                )
+            }
+        }
+    ) { paddingValues ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .background(bg)
+                .statusBarsPadding(),
+            contentPadding = PaddingValues(horizontal = 22.dp, vertical = 18.dp),
+            verticalArrangement = Arrangement.spacedBy(22.dp)
+        ) {
+            item {
+                MainTabHeader(
+                    title = "temu.in",
+                    blue = blue,
+                    textDark = textDark,
+                    showNotificationDot = true
+                )
+            }
+
+            item {
+                SearchBox(textGray = textGray)
+            }
+
+            item {
+                Column {
+                    Text(
+                        text = "Aktif Sekarang",
+                        color = textDark,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 0.sp
+                    )
+                    Spacer(modifier = Modifier.height(14.dp))
+                    LazyRow(horizontalArrangement = Arrangement.spacedBy(22.dp)) {
+                        items(onlineFriends.size) { index ->
+                            OnlineFriendItem(friend = onlineFriends[index])
+                        }
+                        item {
+                            SearchFriendItem(textGray = textGray)
+                        }
+                    }
+                }
+            }
+
+            items(chats.size) { index ->
+                ChatRow(chat = chats[index], textDark = textDark, textGray = textGray, blue = blue)
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(180.dp))
+            }
+        }
+    }
+}
+
+@Composable
+fun ProfilePlaceholderScreen(
+    onHomeClick: () -> Unit = {},
+    onFriendsClick: () -> Unit = {},
+    onActivitiesClick: () -> Unit = {},
+    onMessagesClick: () -> Unit = {},
+    onProfileClick: () -> Unit = {}
+) {
+    val bg = Color(0xFFF6F8FC)
+    val blue = Color(0xFF006AA6)
+    val textDark = Color(0xFF20242C)
+    val textGray = Color(0xFF4F5866)
+
+    Scaffold(
+        containerColor = bg,
+        bottomBar = {
+            TemuinBottomBar(
+                selectedMenu = "Profil",
+                onHomeClick = onHomeClick,
+                onFriendsClick = onFriendsClick,
+                onActivitiesClick = onActivitiesClick,
+                onMessagesClick = onMessagesClick,
+                onProfileClick = onProfileClick
+            )
+        }
+    ) { paddingValues ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .background(bg)
+                .statusBarsPadding(),
+            contentPadding = PaddingValues(horizontal = 22.dp, vertical = 18.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            item {
+                MainTabHeader(
+                    title = "temu.in",
+                    blue = blue,
+                    textDark = textDark,
+                    showNotificationDot = false
+                )
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(60.dp))
+                Box(contentAlignment = Alignment.BottomEnd) {
+                    AvatarCircle(
+                        initials = "AR",
+                        colors = listOf(Color(0xFFFFD9B8), Color(0xFF18202A)),
+                        modifier = Modifier.size(132.dp),
+                        fontSize = 34.sp
+                    )
+                    Box(
+                        modifier = Modifier
+                            .size(30.dp)
+                            .clip(CircleShape)
+                            .background(Color(0xFF5DBB68))
+                            .border(4.dp, bg, CircleShape)
+                    )
+                }
+                Spacer(modifier = Modifier.height(26.dp))
+                Text(
+                    text = "Adrian Rafe",
+                    color = textDark,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Normal,
+                    letterSpacing = 0.sp
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Product Manager | Coffee Enthusiast",
+                    color = textGray,
+                    fontSize = 20.sp,
+                    letterSpacing = 0.sp
+                )
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(34.dp))
+                ProfileStatsCard(blue = blue, textGray = textGray)
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(28.dp))
+                ProfileMenuCard(blue = blue, textDark = textDark)
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(42.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Outlined.Logout,
+                        contentDescription = null,
+                        tint = Color(0xFFB51F25),
+                        modifier = Modifier.size(28.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "Logout",
+                        color = Color(0xFFB51F25),
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        letterSpacing = 0.sp
+                    )
+                }
+                Spacer(modifier = Modifier.height(48.dp))
+            }
+        }
+    }
+}
+
+@Composable
+private fun MainTabHeader(
+    title: String,
+    blue: Color,
+    textDark: Color,
+    showNotificationDot: Boolean
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(58.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            imageVector = Icons.Default.Menu,
+            contentDescription = "Menu",
+            tint = textDark,
+            modifier = Modifier
+                .align(Alignment.CenterStart)
+                .size(34.dp)
+        )
+        Text(
+            text = title,
+            color = blue,
+            fontSize = 30.sp,
+            fontWeight = FontWeight.ExtraBold,
+            letterSpacing = 0.sp
+        )
+        Box(
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .size(40.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Notifications,
+                contentDescription = "Notifikasi",
+                tint = textDark,
+                modifier = Modifier.size(32.dp)
+            )
+            if (showNotificationDot) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(top = 4.dp, end = 4.dp)
+                        .size(10.dp)
+                        .clip(CircleShape)
+                        .background(Color(0xFFBE1E2D))
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun SearchBox(textGray: Color) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(64.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .background(Color(0xFFEFF3F9))
+            .padding(horizontal = 20.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = Icons.Outlined.Search,
+            contentDescription = null,
+            tint = textGray,
+            modifier = Modifier.size(34.dp)
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        Text(
+            text = "Cari pesan atau teman...",
+            color = textGray,
+            fontSize = 19.sp,
+            letterSpacing = 0.sp
+        )
+    }
+}
+
+@Composable
+private fun OnlineFriendItem(friend: OnlineFriend) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Box(contentAlignment = Alignment.BottomEnd) {
+            AvatarCircle(
+                initials = friend.initials,
+                colors = friend.colors,
+                modifier = Modifier.size(62.dp),
+                fontSize = 18.sp
+            )
+            OnlineDot()
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = friend.name,
+            color = Color(0xFF424B58),
+            fontSize = 15.sp,
+            fontWeight = FontWeight.SemiBold,
+            letterSpacing = 0.sp
+        )
+    }
+}
+
+@Composable
+private fun SearchFriendItem(textGray: Color) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Box(
+            modifier = Modifier
+                .size(62.dp)
+                .clip(CircleShape)
+                .background(Color(0xFFE1E6EF)),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Search,
+                contentDescription = "Cari",
+                tint = textGray,
+                modifier = Modifier.size(34.dp)
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = "Cari",
+            color = Color(0xFF424B58),
+            fontSize = 15.sp,
+            fontWeight = FontWeight.SemiBold,
+            letterSpacing = 0.sp
+        )
+    }
+}
+
+@Composable
+private fun ChatRow(
+    chat: ChatPreview,
+    textDark: Color,
+    textGray: Color,
+    blue: Color
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(contentAlignment = Alignment.BottomEnd) {
+            AvatarCircle(
+                initials = chat.initials,
+                colors = chat.colors,
+                modifier = Modifier.size(64.dp),
+                fontSize = 19.sp
+            )
+            if (chat.online) {
+                OnlineDot()
+            }
+        }
+        Spacer(modifier = Modifier.width(16.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = chat.name,
+                color = textDark,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 0.sp
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = chat.message,
+                color = if (chat.unreadCount > 0) textDark else textGray,
+                fontSize = 16.sp,
+                letterSpacing = 0.sp
+            )
+        }
+        Column(horizontalAlignment = Alignment.End) {
+            Text(
+                text = chat.time,
+                color = if (chat.unreadCount > 0) blue else textGray,
+                fontSize = 14.sp,
+                letterSpacing = 0.sp
+            )
+            if (chat.unreadCount > 0) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Box(
+                    modifier = Modifier
+                        .size(32.dp)
+                        .clip(CircleShape)
+                        .background(blue),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = chat.unreadCount.toString(),
+                        color = Color.White,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 0.sp
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun AvatarCircle(
+    initials: String,
+    colors: List<Color>,
+    modifier: Modifier,
+    fontSize: androidx.compose.ui.unit.TextUnit
+) {
+    Box(
+        modifier = modifier
+            .clip(CircleShape)
+            .background(Brush.linearGradient(colors))
+            .border(3.dp, Color.White, CircleShape),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = initials,
+            color = Color.White,
+            fontSize = fontSize,
+            fontWeight = FontWeight.Bold,
+            letterSpacing = 0.sp
+        )
+    }
+}
+
+@Composable
+private fun OnlineDot() {
+    Box(
+        modifier = Modifier
+            .size(16.dp)
+            .clip(CircleShape)
+            .background(Color(0xFF0B8B3E))
+            .border(3.dp, Color(0xFFF6F8FC), CircleShape)
+    )
+}
+
+@Composable
+private fun ProfileStatsCard(blue: Color, textGray: Color) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(14.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 24.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            ProfileStat("128", "Friends", blue, textGray, Modifier.weight(1f))
+            StatDivider()
+            ProfileStat("42", "Activities", blue, textGray, Modifier.weight(1f))
+            StatDivider()
+            ProfileStat("4.9 ★", "Rating", Color(0xFFE29A00), textGray, Modifier.weight(1f))
+        }
+    }
+}
+
+@Composable
+private fun ProfileStat(
+    value: String,
+    label: String,
+    valueColor: Color,
+    labelColor: Color,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            text = value,
+            color = valueColor,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Medium,
+            letterSpacing = 0.sp
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = label,
+            color = labelColor,
+            fontSize = 15.sp,
+            fontWeight = FontWeight.SemiBold,
+            letterSpacing = 0.sp
+        )
+    }
+}
+
+@Composable
+private fun StatDivider() {
+    Box(
+        modifier = Modifier
+            .width(1.dp)
+            .height(48.dp)
+            .background(Color(0xFFE0E5EE))
+    )
+}
+
+@Composable
+private fun ProfileMenuCard(blue: Color, textDark: Color) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(14.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column {
+            ProfileMenuItem("Edit Profil", Icons.Outlined.Edit, blue, textDark)
+            HorizontalDivider(color = Color(0xFFE5EAF2))
+            ProfileMenuItem("Minat & Hobi", Icons.Outlined.Interests, blue, textDark)
+            HorizontalDivider(color = Color(0xFFE5EAF2))
+            ProfileMenuItem("Riwayat Aktivitas", Icons.Outlined.History, blue, textDark)
+            HorizontalDivider(color = Color(0xFFE5EAF2))
+            ProfileMenuItem("Pengaturan", Icons.Outlined.Settings, blue, textDark)
+            HorizontalDivider(color = Color(0xFFE5EAF2))
+            ProfileMenuItem("Pusat Bantuan", Icons.Outlined.HelpOutline, blue, textDark)
+        }
+    }
+}
+
+@Composable
+private fun ProfileMenuItem(
+    title: String,
+    icon: ImageVector,
+    blue: Color,
+    textDark: Color
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(82.dp)
+            .padding(horizontal = 28.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .size(48.dp)
+                .clip(CircleShape)
+                .background(Color(0xFFEAF4FF)),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = blue,
+                modifier = Modifier.size(28.dp)
+            )
+        }
+        Spacer(modifier = Modifier.width(18.dp))
+        Text(
+            text = title,
+            color = textDark,
+            fontSize = 20.sp,
+            letterSpacing = 0.sp,
+            modifier = Modifier.weight(1f)
+        )
+        Icon(
+            imageVector = Icons.Outlined.ChevronRight,
+            contentDescription = null,
+            tint = Color(0xFF414A56),
+            modifier = Modifier.size(30.dp)
+        )
+    }
+}

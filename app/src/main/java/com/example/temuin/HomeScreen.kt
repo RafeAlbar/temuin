@@ -43,7 +43,14 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    onRecommendationClick: () -> Unit = {}
+    onRecommendationClick: () -> Unit = {},
+    onFilterClick: () -> Unit = {},
+    onPopularActivityClick: () -> Unit = {},
+    onHomeClick: () -> Unit = {},
+    onFriendsClick: () -> Unit = {},
+    onActivitiesClick: () -> Unit = {},
+    onMessagesClick: () -> Unit = {},
+    onProfileClick: () -> Unit = {}
 ) {
     Surface(
         modifier = modifier.fillMaxSize(),
@@ -96,7 +103,8 @@ fun HomeScreen(
                         circleColor = Color(0xFF91F29D),
                         gradientStart = Color(0xFFF5F8FF),
                         gradientEnd = Color(0xFFE0F7E5),
-                        icon = { SlidersIcon(Modifier.size(34.dp), Color(0xFF0F7A36)) }
+                        icon = { SlidersIcon(Modifier.size(34.dp), Color(0xFF0F7A36)) },
+                        onClick = onFilterClick
                     )
                     Spacer(Modifier.height(26.dp))
                     ExploreCard(
@@ -105,11 +113,20 @@ fun HomeScreen(
                         circleColor = Color(0xFFFFD2CE),
                         gradientStart = Color(0xFFF7F9FF),
                         gradientEnd = Color(0xFFFFEFF0),
-                        icon = { FlameIcon(Modifier.size(34.dp), Color(0xFFB00018)) }
+                        icon = { FlameIcon(Modifier.size(34.dp), Color(0xFFB00018)) },
+                        onClick = onPopularActivityClick
                     )
                 }
             }
-            HomeBottomNav(Modifier.align(Alignment.BottomCenter))
+            TemuinBottomBar(
+                selectedMenu = "Beranda",
+                modifier = Modifier.align(Alignment.BottomCenter),
+                onHomeClick = onHomeClick,
+                onFriendsClick = onFriendsClick,
+                onActivitiesClick = onActivitiesClick,
+                onMessagesClick = onMessagesClick,
+                onProfileClick = onProfileClick
+            )
         }
     }
 }
@@ -191,7 +208,14 @@ private fun ExploreCard(
 }
 
 @Composable
-private fun HomeBottomNav(modifier: Modifier = Modifier) {
+private fun HomeBottomNav(
+    modifier: Modifier = Modifier,
+    onHomeClick: () -> Unit = {},
+    onFriendsClick: () -> Unit = {},
+    onActivitiesClick: () -> Unit = {},
+    onMessagesClick: () -> Unit = {},
+    onProfileClick: () -> Unit = {}
+) {
     Surface(
         modifier = modifier.fillMaxWidth(),
         color = Color.White,
@@ -207,22 +231,23 @@ private fun HomeBottomNav(modifier: Modifier = Modifier) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            SelectedNavItem("Beranda", Modifier.weight(1f))
-            NavItem("Teman", Modifier.weight(1f)) { HomePeopleIcon(Modifier.size(30.dp), Color(0xFF434B58)) }
-            NavItem("Aktivitas", Modifier.weight(1f)) { CompassIcon(Modifier.size(30.dp), Color(0xFF434B58)) }
-            NavItem("Pesan", Modifier.weight(1f)) { ChatIcon(Modifier.size(30.dp), Color(0xFF434B58)) }
-            NavItem("Profil", Modifier.weight(1f)) { HomeUserIcon(Modifier.size(30.dp), Color(0xFF434B58)) }
+            SelectedNavItem("Beranda", Modifier.weight(1f), onClick = onHomeClick)
+            NavItem("Teman", Modifier.weight(1f), onClick = onFriendsClick) { HomePeopleIcon(Modifier.size(30.dp), Color(0xFF434B58)) }
+            NavItem("Aktivitas", Modifier.weight(1f), onClick = onActivitiesClick) { CompassIcon(Modifier.size(30.dp), Color(0xFF434B58)) }
+            NavItem("Pesan", Modifier.weight(1f), onClick = onMessagesClick) { ChatIcon(Modifier.size(30.dp), Color(0xFF434B58)) }
+            NavItem("Profil", Modifier.weight(1f), onClick = onProfileClick) { HomeUserIcon(Modifier.size(30.dp), Color(0xFF434B58)) }
         }
     }
 }
 
 @Composable
-private fun SelectedNavItem(label: String, modifier: Modifier = Modifier) {
+private fun SelectedNavItem(label: String, modifier: Modifier = Modifier, onClick: () -> Unit = {}) {
     Row(
         modifier = modifier
             .height(56.dp)
             .clip(RoundedCornerShape(28.dp))
             .background(HomeButtonBlue)
+            .clickable(onClick = onClick)
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
@@ -234,9 +259,11 @@ private fun SelectedNavItem(label: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun NavItem(label: String, modifier: Modifier = Modifier, icon: @Composable () -> Unit) {
+private fun NavItem(label: String, modifier: Modifier = Modifier, onClick: () -> Unit = {}, icon: @Composable () -> Unit) {
     Column(
-        modifier = modifier.height(56.dp),
+        modifier = modifier
+            .height(56.dp)
+            .clickable(onClick = onClick),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {

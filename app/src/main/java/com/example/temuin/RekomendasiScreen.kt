@@ -55,6 +55,10 @@ data class RecommendationProfile(
 fun RekomendasiScreen(
     modifier: Modifier = Modifier,
     onHomeClick: () -> Unit = {},
+    onFriendsClick: () -> Unit = {},
+    onActivitiesClick: () -> Unit = {},
+    onMessagesClick: () -> Unit = {},
+    onProfileClick: () -> Unit = {},
     onDetailClick: (RecommendationProfile) -> Unit = {}
 ) {
     val friends = listOf(
@@ -90,7 +94,14 @@ fun RekomendasiScreen(
     Scaffold(
         modifier = modifier.fillMaxSize(),
         bottomBar = {
-            RecommendationBottomNavigationBar(onHomeClick = onHomeClick)
+            TemuinBottomBar(
+                selectedMenu = "Teman",
+                onHomeClick = onHomeClick,
+                onFriendsClick = onFriendsClick,
+                onActivitiesClick = onActivitiesClick,
+                onMessagesClick = onMessagesClick,
+                onProfileClick = onProfileClick
+            )
         },
         containerColor = RecommendationBackground
     ) { paddingValues ->
@@ -385,7 +396,13 @@ private fun InterestChip(
 }
 
 @Composable
-private fun RecommendationBottomNavigationBar(onHomeClick: () -> Unit) {
+private fun RecommendationBottomNavigationBar(
+    onHomeClick: () -> Unit,
+    onFriendsClick: () -> Unit,
+    onActivitiesClick: () -> Unit,
+    onMessagesClick: () -> Unit,
+    onProfileClick: () -> Unit
+) {
     NavigationBar(
         containerColor = Color.White,
         tonalElevation = 8.dp
@@ -400,25 +417,29 @@ private fun RecommendationBottomNavigationBar(onHomeClick: () -> Unit) {
         BottomNavItem(
             icon = "T",
             label = "Teman",
-            selected = true
+            selected = true,
+            onClick = onFriendsClick
         )
 
         BottomNavItem(
             icon = "A",
             label = "Aktivitas",
-            selected = false
+            selected = false,
+            onClick = onActivitiesClick
         )
 
         BottomNavItem(
             icon = "P",
             label = "Pesan",
-            selected = false
+            selected = false,
+            onClick = onMessagesClick
         )
 
         BottomNavItem(
             icon = "U",
             label = "Profil",
-            selected = false
+            selected = false,
+            onClick = onProfileClick
         )
     }
 }

@@ -76,6 +76,10 @@ class MainActivity : ComponentActivity() {
                 var destination by remember { mutableStateOf(AppDestination.Auth) }
                 var selectedProfile by remember { mutableStateOf<RecommendationProfile?>(null) }
                 var invitationPlan by remember { mutableStateOf<InvitationPlan?>(null) }
+                var selectedActivityInvitation by remember { mutableStateOf(defaultActivityInvitationPlan()) }
+                var showConfirmedLocation by remember { mutableStateOf(true) }
+                var locationBackDestination by remember { mutableStateOf(AppDestination.InvitationConfirmed) }
+                var participantsBackDestination by remember { mutableStateOf(AppDestination.ActivityConfirmed) }
 
                 when (destination) {
                     AppDestination.Auth -> TemuinLoginScreen(
@@ -88,11 +92,34 @@ class MainActivity : ComponentActivity() {
                     )
 
                     AppDestination.Home -> HomeScreen(
-                        onRecommendationClick = { destination = AppDestination.Recommendations }
+                        onRecommendationClick = { destination = AppDestination.Recommendations },
+                        onFilterClick = { destination = AppDestination.FilterFriends },
+                        onPopularActivityClick = { destination = AppDestination.PopularActivities },
+                        onHomeClick = { destination = AppDestination.Home },
+                        onFriendsClick = { destination = AppDestination.FilterFriends },
+                        onActivitiesClick = { destination = AppDestination.MyActivities },
+                        onMessagesClick = { destination = AppDestination.Messages },
+                        onProfileClick = { destination = AppDestination.Profile }
+                    )
+
+                    AppDestination.FilterFriends -> FriendFilterScreen(
+                        onInviteClick = { profile ->
+                            selectedProfile = profile
+                            destination = AppDestination.ProfileDetail
+                        },
+                        onHomeClick = { destination = AppDestination.Home },
+                        onFriendsClick = { destination = AppDestination.FilterFriends },
+                        onActivitiesClick = { destination = AppDestination.MyActivities },
+                        onMessagesClick = { destination = AppDestination.Messages },
+                        onProfileClick = { destination = AppDestination.Profile }
                     )
 
                     AppDestination.Recommendations -> RekomendasiScreen(
                         onHomeClick = { destination = AppDestination.Home },
+                        onFriendsClick = { destination = AppDestination.FilterFriends },
+                        onActivitiesClick = { destination = AppDestination.MyActivities },
+                        onMessagesClick = { destination = AppDestination.Messages },
+                        onProfileClick = { destination = AppDestination.Profile },
                         onDetailClick = { profile ->
                             selectedProfile = profile
                             destination = AppDestination.ProfileDetail
@@ -107,6 +134,10 @@ class MainActivity : ComponentActivity() {
                         )
                     } ?: RekomendasiScreen(
                         onHomeClick = { destination = AppDestination.Home },
+                        onFriendsClick = { destination = AppDestination.FilterFriends },
+                        onActivitiesClick = { destination = AppDestination.MyActivities },
+                        onMessagesClick = { destination = AppDestination.Messages },
+                        onProfileClick = { destination = AppDestination.Profile },
                         onDetailClick = { profile ->
                             selectedProfile = profile
                             destination = AppDestination.ProfileDetail
@@ -124,6 +155,10 @@ class MainActivity : ComponentActivity() {
                         )
                     } ?: RekomendasiScreen(
                         onHomeClick = { destination = AppDestination.Home },
+                        onFriendsClick = { destination = AppDestination.FilterFriends },
+                        onActivitiesClick = { destination = AppDestination.MyActivities },
+                        onMessagesClick = { destination = AppDestination.Messages },
+                        onProfileClick = { destination = AppDestination.Profile },
                         onDetailClick = { profile ->
                             selectedProfile = profile
                             destination = AppDestination.ProfileDetail
@@ -137,12 +172,138 @@ class MainActivity : ComponentActivity() {
                             ChatSingkatScreen(
                                 profile = profile,
                                 invitation = plan,
-                                onBackClick = { destination = AppDestination.CreateInvitation }
+                                onBackClick = { destination = AppDestination.CreateInvitation },
+                                onMoveToInviteePovClick = { destination = AppDestination.InvitationConfirmation }
                             )
                         } else {
                             destination = AppDestination.Recommendations
                         }
                     }
+
+                    AppDestination.InvitationConfirmation -> {
+                        val profile = selectedProfile
+                        val plan = invitationPlan
+                        if (profile != null && plan != null) {
+                            KonfirmasiAjakanScreen(
+                                profile = profile,
+                                invitation = plan,
+                                onBackClick = { destination = AppDestination.ShortChat },
+                                onAcceptClick = {
+                                    showConfirmedLocation = true
+                                    destination = AppDestination.InvitationConfirmed
+                                },
+                                onChatFirstClick = {
+                                    showConfirmedLocation = false
+                                    destination = AppDestination.InvitationConfirmed
+                                }
+                            )
+                        } else {
+                            destination = AppDestination.Recommendations
+                        }
+                    }
+
+                    AppDestination.InvitationConfirmed -> {
+                        val profile = selectedProfile
+                        val plan = invitationPlan
+                        if (profile != null && plan != null) {
+                            AjakanDikonfirmasiScreen(
+                                profile = profile,
+                                invitation = plan,
+                                showLocation = showConfirmedLocation,
+                                onBackClick = { destination = AppDestination.InvitationConfirmation },
+                                onHeaderClick = {
+                                    participantsBackDestination = AppDestination.InvitationConfirmed
+                                    destination = AppDestination.Participants
+                                },
+                                onLocationClick = {
+                                    locationBackDestination = AppDestination.InvitationConfirmed
+                                    destination = AppDestination.Location
+                                }
+                            )
+                        } else {
+                            destination = AppDestination.Recommendations
+                        }
+                    }
+
+                    AppDestination.Location -> MeetLocationScreen(
+                        onBackClick = { destination = locationBackDestination },
+                        onEndSessionClick = { destination = AppDestination.RatingMeet }
+                    )
+
+                    AppDestination.Participants -> ParticipantsScreen(
+                        onBackClick = { destination = participantsBackDestination }
+                    )
+
+                    AppDestination.RatingMeet -> MeetingFeedbackScreen(
+                        onCloseClick = { destination = AppDestination.Home }
+                    )
+
+                    AppDestination.PopularActivities -> PopularActivityScreen(
+                        onBackClick = { destination = AppDestination.Home },
+                        onJoinActivityClick = { activity ->
+                            selectedActivityInvitation = activity
+                            destination = AppDestination.ActivityDetail
+                        },
+                        onHomeClick = { destination = AppDestination.Home },
+                        onFriendsClick = { destination = AppDestination.FilterFriends },
+                        onActivitiesClick = { destination = AppDestination.MyActivities },
+                        onMessagesClick = { destination = AppDestination.Messages },
+                        onProfileClick = { destination = AppDestination.Profile }
+                    )
+
+                    AppDestination.MyActivities -> MyActivitiesScreen(
+                        onHomeClick = { destination = AppDestination.Home },
+                        onFriendsClick = { destination = AppDestination.FilterFriends },
+                        onActivitiesClick = { destination = AppDestination.MyActivities },
+                        onMessagesClick = { destination = AppDestination.Messages },
+                        onProfileClick = { destination = AppDestination.Profile },
+                        onAddActivityClick = { destination = AppDestination.AddActivity }
+                    )
+
+                    AppDestination.AddActivity -> TambahAktivitasScreen(
+                        onCloseClick = { destination = AppDestination.MyActivities },
+                        onCreateActivityClick = { destination = AppDestination.MyActivities }
+                    )
+
+                    AppDestination.Messages -> MessagesPlaceholderScreen(
+                        onHomeClick = { destination = AppDestination.Home },
+                        onFriendsClick = { destination = AppDestination.FilterFriends },
+                        onActivitiesClick = { destination = AppDestination.MyActivities },
+                        onMessagesClick = { destination = AppDestination.Messages },
+                        onProfileClick = { destination = AppDestination.Profile }
+                    )
+
+                    AppDestination.Profile -> ProfilePlaceholderScreen(
+                        onHomeClick = { destination = AppDestination.Home },
+                        onFriendsClick = { destination = AppDestination.FilterFriends },
+                        onActivitiesClick = { destination = AppDestination.MyActivities },
+                        onMessagesClick = { destination = AppDestination.Messages },
+                        onProfileClick = { destination = AppDestination.Profile }
+                    )
+
+                    AppDestination.ActivityDetail -> ActivityDetailScreen(
+                        invitation = selectedActivityInvitation,
+                        onBackClick = { destination = AppDestination.PopularActivities },
+                        onJoinActivityClick = { destination = AppDestination.ActivityConfirmed }
+                    )
+
+                    AppDestination.ActivityConfirmed -> AjakanDikonfirmasiScreen(
+                        profile = activityChatProfile,
+                        invitation = selectedActivityInvitation,
+                        showLocation = true,
+                        chatName = selectedActivityInvitation.title,
+                        chatAvatarText = activityAvatarText(selectedActivityInvitation.title),
+                        chatOnlineText = "Aktivitas dikonfirmasi",
+                        onBackClick = { destination = AppDestination.ActivityDetail },
+                        onHeaderClick = {
+                            participantsBackDestination = AppDestination.ActivityConfirmed
+                            destination = AppDestination.Participants
+                        },
+                        onLocationClick = {
+                            locationBackDestination = AppDestination.ActivityConfirmed
+                            destination = AppDestination.Location
+                        }
+                    )
                 }
             }
         }
@@ -920,11 +1081,51 @@ private enum class AppDestination {
     Auth,
     Onboarding,
     Home,
+    FilterFriends,
     Recommendations,
     ProfileDetail,
     CreateInvitation,
-    ShortChat
+    ShortChat,
+    InvitationConfirmation,
+    InvitationConfirmed,
+    Location,
+    Participants,
+    RatingMeet,
+    PopularActivities,
+    MyActivities,
+    AddActivity,
+    Messages,
+    Profile,
+    ActivityDetail,
+    ActivityConfirmed
 }
+
+private fun defaultActivityInvitationPlan(): InvitationPlan {
+    return InvitationPlan(
+        title = "Kopi & Diskusi Santai",
+        time = "Hari ini, 16:00 - 18:00 WIB",
+        place = "Kopi Kenangan, Sudirman"
+    )
+}
+
+private fun activityAvatarText(title: String): String {
+    return title
+        .split(" ")
+        .mapNotNull { it.firstOrNull()?.toString() }
+        .take(2)
+        .joinToString("")
+        .ifBlank { "AK" }
+}
+
+private val activityChatProfile = RecommendationProfile(
+    name = "Aktivitas",
+    job = "Temu.in Activity",
+    distance = "Sekitar kamu",
+    match = "Dikonfirmasi",
+    tags = listOf("Aktivitas"),
+    avatarText = "AK",
+    online = true
+)
 
 @Preview(showBackground = true)
 @Composable
