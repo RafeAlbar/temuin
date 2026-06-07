@@ -73,14 +73,31 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TemuinTheme {
-                TemuinLoginScreen()
+                var destination by remember { mutableStateOf(AppDestination.Auth) }
+
+                when (destination) {
+                    AppDestination.Auth -> TemuinLoginScreen(
+                        onAuthenticated = { destination = AppDestination.Onboarding }
+                    )
+
+                    AppDestination.Onboarding -> OnboardingScreen(
+                        onBackClick = { destination = AppDestination.Auth },
+                        onContinueClick = { destination = AppDestination.Home }
+                    )
+
+                    AppDestination.Home -> HomeScreen()
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-fun TemuinLoginScreen(modifier: Modifier = Modifier) {
+fun TemuinLoginScreen(
+    modifier: Modifier = Modifier,
+    onAuthenticated: () -> Unit = {}
+) {
     var selectedTab by remember { mutableStateOf(AuthTab.Login) }
 
     Surface(
@@ -105,13 +122,17 @@ fun TemuinLoginScreen(modifier: Modifier = Modifier) {
                 Spacer(Modifier.height(32.dp))
                 LoginCard(
                     selectedTab = selectedTab,
-                    onTabSelected = { selectedTab = it }
+                    onTabSelected = { selectedTab = it },
+                    onLoginClick = onAuthenticated
                 )
                 Spacer(Modifier.height(20.dp))
                 TipCard()
             } else {
                 Spacer(Modifier.height(56.dp))
-                RegisterCard(onLoginClick = { selectedTab = AuthTab.Login })
+                RegisterCard(
+                    onRegisterClick = onAuthenticated,
+                    onLoginClick = { selectedTab = AuthTab.Login }
+                )
             }
         }
     }
@@ -173,7 +194,11 @@ private fun AppMark() {
 }
 
 @Composable
-private fun LoginCard(selectedTab: AuthTab, onTabSelected: (AuthTab) -> Unit) {
+private fun LoginCard(
+    selectedTab: AuthTab,
+    onTabSelected: (AuthTab) -> Unit,
+    onLoginClick: () -> Unit
+) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
@@ -225,7 +250,7 @@ private fun LoginCard(selectedTab: AuthTab, onTabSelected: (AuthTab) -> Unit) {
             )
             Spacer(Modifier.height(28.dp))
             Button(
-                onClick = {},
+                onClick = onLoginClick,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
@@ -262,7 +287,7 @@ private fun LoginCard(selectedTab: AuthTab, onTabSelected: (AuthTab) -> Unit) {
 }
 
 @Composable
-private fun RegisterCard(onLoginClick: () -> Unit) {
+private fun RegisterCard(onRegisterClick: () -> Unit, onLoginClick: () -> Unit) {
     var fullName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -347,7 +372,7 @@ private fun RegisterCard(onLoginClick: () -> Unit) {
             )
             Spacer(Modifier.height(24.dp))
             Button(
-                onClick = {},
+                onClick = onRegisterClick,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(58.dp),
@@ -833,6 +858,12 @@ private fun PeopleIcon(modifier: Modifier = Modifier, color: Color) {
 private enum class AuthTab {
     Login,
     Register
+}
+
+private enum class AppDestination {
+    Auth,
+    Onboarding,
+    Home
 }
 
 @Preview(showBackground = true)
