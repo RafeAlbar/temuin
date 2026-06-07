@@ -85,7 +85,12 @@ class MainActivity : ComponentActivity() {
                         onContinueClick = { destination = AppDestination.Home }
                     )
 
-                    AppDestination.Home -> HomeScreen()
+                    AppDestination.Home -> HomeScreen(
+                        onRecommendationClick = { destination = AppDestination.Recommendations }
+                    )
+
+                    AppDestination.Recommendations -> RekomendasiScreen(
+                        onHomeClick = { destination = AppDestination.Home }
                     )
                 }
             }
@@ -863,7 +868,8 @@ private enum class AuthTab {
 private enum class AppDestination {
     Auth,
     Onboarding,
-    Home
+    Home,
+    Recommendations
 }
 
 @Preview(showBackground = true)

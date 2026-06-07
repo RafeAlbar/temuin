@@ -55,6 +55,7 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun OnboardingScreen(
     onBackClick: () -> Unit,
+    onContinueClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var hobbyInput by remember { mutableStateOf("") }
@@ -210,7 +211,7 @@ fun OnboardingScreen(
             }
             BottomActionBar(
                 modifier = Modifier.align(Alignment.BottomCenter),
-                onClick = {}
+                onClick = onContinueClick
             )
         }
     }
