@@ -74,6 +74,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             TemuinTheme {
                 var destination by remember { mutableStateOf(AppDestination.Auth) }
+                var selectedProfile by remember { mutableStateOf<RecommendationProfile?>(null) }
+                var invitationPlan by remember { mutableStateOf<InvitationPlan?>(null) }
 
                 when (destination) {
                     AppDestination.Auth -> TemuinLoginScreen(
@@ -90,8 +92,57 @@ class MainActivity : ComponentActivity() {
                     )
 
                     AppDestination.Recommendations -> RekomendasiScreen(
-                        onHomeClick = { destination = AppDestination.Home }
+                        onHomeClick = { destination = AppDestination.Home },
+                        onDetailClick = { profile ->
+                            selectedProfile = profile
+                            destination = AppDestination.ProfileDetail
+                        }
                     )
+
+                    AppDestination.ProfileDetail -> selectedProfile?.let { profile ->
+                        LihatDetailScreen(
+                            profile = profile,
+                            onBackClick = { destination = AppDestination.Recommendations },
+                            onInviteClick = { destination = AppDestination.CreateInvitation }
+                        )
+                    } ?: RekomendasiScreen(
+                        onHomeClick = { destination = AppDestination.Home },
+                        onDetailClick = { profile ->
+                            selectedProfile = profile
+                            destination = AppDestination.ProfileDetail
+                        }
+                    )
+
+                    AppDestination.CreateInvitation -> selectedProfile?.let { profile ->
+                        BuatAjakanScreen(
+                            profile = profile,
+                            onBackClick = { destination = AppDestination.ProfileDetail },
+                            onCreateClick = { plan ->
+                                invitationPlan = plan
+                                destination = AppDestination.ShortChat
+                            }
+                        )
+                    } ?: RekomendasiScreen(
+                        onHomeClick = { destination = AppDestination.Home },
+                        onDetailClick = { profile ->
+                            selectedProfile = profile
+                            destination = AppDestination.ProfileDetail
+                        }
+                    )
+
+                    AppDestination.ShortChat -> {
+                        val profile = selectedProfile
+                        val plan = invitationPlan
+                        if (profile != null && plan != null) {
+                            ChatSingkatScreen(
+                                profile = profile,
+                                invitation = plan,
+                                onBackClick = { destination = AppDestination.CreateInvitation }
+                            )
+                        } else {
+                            destination = AppDestination.Recommendations
+                        }
+                    }
                 }
             }
         }
@@ -869,7 +920,10 @@ private enum class AppDestination {
     Auth,
     Onboarding,
     Home,
-    Recommendations
+    Recommendations,
+    ProfileDetail,
+    CreateInvitation,
+    ShortChat
 }
 
 @Preview(showBackground = true)

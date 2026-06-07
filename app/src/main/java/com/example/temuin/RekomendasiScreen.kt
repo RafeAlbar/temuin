@@ -41,7 +41,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-private data class RecommendedFriend(
+data class RecommendationProfile(
     val name: String,
     val job: String,
     val distance: String,
@@ -54,34 +54,35 @@ private data class RecommendedFriend(
 @Composable
 fun RekomendasiScreen(
     modifier: Modifier = Modifier,
-    onHomeClick: () -> Unit = {}
+    onHomeClick: () -> Unit = {},
+    onDetailClick: (RecommendationProfile) -> Unit = {}
 ) {
     val friends = listOf(
-        RecommendedFriend(
-            name = "Nadia P.",
-            job = "Product Designer",
+        RecommendationProfile(
+            name = "Adrian Rafe",
+            job = "Web Developer",
             distance = "2 km",
             match = "95% Cocok",
             tags = listOf("UI/UX", "Kopi", "Museum"),
-            avatarText = "N",
+            avatarText = "AR",
             online = true
         ),
-        RecommendedFriend(
-            name = "Bima A.",
-            job = "Mahasiswa Arsitektur",
+        RecommendationProfile(
+            name = "Bayu A.",
+            job = "UI/UX Designer",
             distance = "5 km",
             match = "88% Cocok",
             tags = listOf("Fotografi", "Kopi", "Bersepeda"),
-            avatarText = "B",
+            avatarText = "BA",
             online = false
         ),
-        RecommendedFriend(
-            name = "Rizky D.",
+        RecommendationProfile(
+            name = "Sekar P",
             job = "Software Engineer",
             distance = "1 km",
             match = "75% Cocok",
             tags = listOf("Coding", "Gaming", "Anime"),
-            avatarText = "R",
+            avatarText = "SP",
             online = true
         )
     )
@@ -135,7 +136,10 @@ fun RekomendasiScreen(
             }
 
             items(friends.size) { index ->
-                FriendCard(friend = friends[index])
+                FriendCard(
+                    friend = friends[index],
+                    onDetailClick = { onDetailClick(friends[index]) }
+                )
             }
         }
     }
@@ -216,7 +220,10 @@ private fun FilterChipItem(
 }
 
 @Composable
-private fun FriendCard(friend: RecommendedFriend) {
+private fun FriendCard(
+    friend: RecommendationProfile,
+    onDetailClick: () -> Unit
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(18.dp),
@@ -282,7 +289,7 @@ private fun FriendCard(friend: RecommendedFriend) {
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 OutlinedButton(
-                    onClick = {},
+                    onClick = onDetailClick,
                     modifier = Modifier
                         .weight(1f)
                         .height(48.dp),
@@ -320,7 +327,7 @@ private fun FriendCard(friend: RecommendedFriend) {
 }
 
 @Composable
-private fun Avatar(friend: RecommendedFriend) {
+private fun Avatar(friend: RecommendationProfile) {
     Box {
         Box(
             modifier = Modifier
