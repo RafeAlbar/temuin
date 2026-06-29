@@ -2,6 +2,7 @@ package com.example.temuin
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -71,7 +72,8 @@ fun MessagesPlaceholderScreen(
     onFriendsClick: () -> Unit = {},
     onActivitiesClick: () -> Unit = {},
     onMessagesClick: () -> Unit = {},
-    onProfileClick: () -> Unit = {}
+    onProfileClick: () -> Unit = {},
+    onChatClick: () -> Unit = {}
 ) {
     val bg = Color(0xFFF6F8FC)
     val blue = Color(0xFF006AA6)
@@ -185,7 +187,13 @@ fun MessagesPlaceholderScreen(
             }
 
             items(chats.size) { index ->
-                ChatRow(chat = chats[index], textDark = textDark, textGray = textGray, blue = blue)
+                ChatRow(
+                    chat = chats[index],
+                    textDark = textDark,
+                    textGray = textGray,
+                    blue = blue,
+                    onClick = onChatClick
+                )
             }
 
             item {
@@ -444,11 +452,13 @@ private fun ChatRow(
     chat: ChatPreview,
     textDark: Color,
     textGray: Color,
-    blue: Color
+    blue: Color,
+    onClick: () -> Unit = {}
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable(onClick = onClick)
             .padding(vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

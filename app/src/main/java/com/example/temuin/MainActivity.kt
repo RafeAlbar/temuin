@@ -78,6 +78,7 @@ class MainActivity : ComponentActivity() {
                 var invitationPlan by remember { mutableStateOf<InvitationPlan?>(null) }
                 var selectedActivityInvitation by remember { mutableStateOf(defaultActivityInvitationPlan()) }
                 var showConfirmedLocation by remember { mutableStateOf(true) }
+                var chatBackDestination by remember { mutableStateOf(AppDestination.CreateInvitation) }
                 var locationBackDestination by remember { mutableStateOf(AppDestination.InvitationConfirmed) }
                 var participantsBackDestination by remember { mutableStateOf(AppDestination.ActivityConfirmed) }
 
@@ -150,6 +151,7 @@ class MainActivity : ComponentActivity() {
                             onBackClick = { destination = AppDestination.ProfileDetail },
                             onCreateClick = { plan ->
                                 invitationPlan = plan
+                                chatBackDestination = AppDestination.CreateInvitation
                                 destination = AppDestination.ShortChat
                             }
                         )
@@ -172,7 +174,7 @@ class MainActivity : ComponentActivity() {
                             ChatSingkatScreen(
                                 profile = profile,
                                 invitation = plan,
-                                onBackClick = { destination = AppDestination.CreateInvitation },
+                                onBackClick = { destination = chatBackDestination },
                                 onMoveToInviteePovClick = { destination = AppDestination.InvitationConfirmation }
                             )
                         } else {
@@ -270,7 +272,13 @@ class MainActivity : ComponentActivity() {
                         onFriendsClick = { destination = AppDestination.FilterFriends },
                         onActivitiesClick = { destination = AppDestination.MyActivities },
                         onMessagesClick = { destination = AppDestination.Messages },
-                        onProfileClick = { destination = AppDestination.Profile }
+                        onProfileClick = { destination = AppDestination.Profile },
+                        onChatClick = {
+                            selectedProfile = messageChatProfile
+                            invitationPlan = messageChatInvitationPlan()
+                            chatBackDestination = AppDestination.Messages
+                            destination = AppDestination.ShortChat
+                        }
                     )
 
                     AppDestination.Profile -> ProfilePlaceholderScreen(
@@ -1108,6 +1116,14 @@ private fun defaultActivityInvitationPlan(): InvitationPlan {
     )
 }
 
+private fun messageChatInvitationPlan(): InvitationPlan {
+    return InvitationPlan(
+        title = "Ngobrol Santai",
+        time = "Hari ini, 14:20 WIB",
+        place = "Chat temu.in"
+    )
+}
+
 private fun activityAvatarText(title: String): String {
     return title
         .split(" ")
@@ -1124,6 +1140,16 @@ private val activityChatProfile = RecommendationProfile(
     match = "Dikonfirmasi",
     tags = listOf("Aktivitas"),
     avatarText = "AK",
+    online = true
+)
+
+private val messageChatProfile = RecommendationProfile(
+    name = "Bayu A",
+    job = "Teman temu.in",
+    distance = "Online",
+    match = "Chat aktif",
+    tags = listOf("Kopi", "Diskusi"),
+    avatarText = "BA",
     online = true
 )
 
