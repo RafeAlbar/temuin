@@ -1,6 +1,5 @@
 package com.example.temuin
 
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -222,17 +221,15 @@ fun ProfilePlaceholderScreen(
     onInterestsClick: () -> Unit = {},
     onActivityHistoryClick: () -> Unit = {},
     onSettingsClick: () -> Unit = {},
-    onHelpCenterClick: () -> Unit = {}
+    onHelpCenterClick: () -> Unit = {},
+    onRatingClick: () -> Unit = {},
+    onLogoutClick: () -> Unit = {},
+    onNotificationClick: () -> Unit = {}
 ) {
-    val context = LocalContext.current
     val bg = Color(0xFFF6F8FC)
     val blue = Color(0xFF006AA6)
     val textDark = Color(0xFF20242C)
     val textGray = Color(0xFF4F5866)
-    val showProfileAction: (String) -> Unit = { action ->
-        Toast.makeText(context, action, Toast.LENGTH_SHORT).show()
-    }
-
     Scaffold(
         containerColor = bg,
         bottomBar = {
@@ -260,7 +257,8 @@ fun ProfilePlaceholderScreen(
                     title = "temu.in",
                     blue = blue,
                     textDark = textDark,
-                    showNotificationDot = false
+                    showNotificationDot = false,
+                    onNotificationClick = onNotificationClick
                 )
             }
 
@@ -309,7 +307,7 @@ fun ProfilePlaceholderScreen(
                     textGray = textGray,
                     onFriendsClick = { onFriendsClick() },
                     onActivitiesClick = { onActivitiesClick() },
-                    onRatingClick = { showProfileAction("Rating profil: 4.9") }
+                    onRatingClick = onRatingClick
                 )
             }
 
@@ -329,7 +327,7 @@ fun ProfilePlaceholderScreen(
             item {
                 Spacer(modifier = Modifier.height(42.dp))
                 Row(
-                    modifier = Modifier.clickable { showProfileAction("Logout ditekan") },
+                    modifier = Modifier.clickable(onClick = onLogoutClick),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
@@ -359,6 +357,7 @@ fun ProfileMenuDetailScreen(
     subtitle: String,
     items: List<String>,
     actionText: String,
+    onActionClick: () -> Unit = {},
     onBackClick: () -> Unit = {},
     onHomeClick: () -> Unit = {},
     onFriendsClick: () -> Unit = {},
@@ -366,7 +365,7 @@ fun ProfileMenuDetailScreen(
     onMessagesClick: () -> Unit = {},
     onProfileClick: () -> Unit = {}
 ) {
-    val context = LocalContext.current
+
     val bg = Color(0xFFF6F8FC)
     val blue = Color(0xFF006AA6)
     val textDark = Color(0xFF20242C)
@@ -443,7 +442,7 @@ fun ProfileMenuDetailScreen(
                         .clip(RoundedCornerShape(14.dp))
                         .background(blue)
                         .clickable {
-                            Toast.makeText(context, "$actionText ditekan", Toast.LENGTH_SHORT).show()
+                            onActionClick()
                         },
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
@@ -727,7 +726,8 @@ private fun MainTabHeader(
     title: String,
     blue: Color,
     textDark: Color,
-    showNotificationDot: Boolean
+    showNotificationDot: Boolean,
+    onNotificationClick: () -> Unit = {}
 ) {
     Box(
         modifier = Modifier
@@ -753,7 +753,8 @@ private fun MainTabHeader(
         Box(
             modifier = Modifier
                 .align(Alignment.CenterEnd)
-                .size(40.dp),
+                .size(40.dp)
+                .clickable(onClick = onNotificationClick),
             contentAlignment = Alignment.Center
         ) {
             Icon(
@@ -1105,5 +1106,201 @@ private fun ProfileMenuItem(
             tint = Color(0xFF414A56),
             modifier = Modifier.size(30.dp)
         )
+    }
+}
+
+@Composable
+fun ProfilRatingScreen(
+    onBackClick: () -> Unit = {},
+    onHomeClick: () -> Unit = {},
+    onFriendsClick: () -> Unit = {},
+    onActivitiesClick: () -> Unit = {},
+    onMessagesClick: () -> Unit = {},
+    onProfileClick: () -> Unit = {}
+) {
+    val bg = Color(0xFFF6F8FC)
+    val blue = Color(0xFF006AA6)
+    val textDark = Color(0xFF20242C)
+    val textGray = Color(0xFF4F5866)
+    Scaffold(
+        containerColor = bg,
+        bottomBar = {
+            TemuinBottomBar(
+                selectedMenu = "Profil",
+                onHomeClick = onHomeClick,
+                onFriendsClick = onFriendsClick,
+                onActivitiesClick = onActivitiesClick,
+                onMessagesClick = onMessagesClick,
+                onProfileClick = onProfileClick
+            )
+        }
+    ) { paddingValues ->
+        LazyColumn(
+            modifier = Modifier.fillMaxSize().padding(paddingValues).background(bg).statusBarsPadding(),
+            contentPadding = PaddingValues(horizontal = 22.dp, vertical = 18.dp)
+        ) {
+            item {
+                DetailProfileHeader(title = "Rating Saya", blue = blue, textDark = textDark, onBackClick = onBackClick)
+            }
+            item {
+                Spacer(Modifier.height(26.dp))
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(18.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    Column(Modifier.fillMaxWidth().padding(30.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text("4,9", color = Color(0xFFE29A00), fontSize = 56.sp, fontWeight = FontWeight.Bold, letterSpacing = 0.sp)
+                        Spacer(Modifier.height(6.dp))
+                        Text("Rating Sempurna!", color = textGray, fontSize = 20.sp, letterSpacing = 0.sp)
+                        Spacer(Modifier.height(20.dp))
+                        Text("Dari 24 ulasan Ã¢â‚¬â€ kamu dinilai ramah, aktif, dan seru diajak ngobrol.", color = textGray, fontSize = 16.sp, lineHeight = 24.sp, letterSpacing = 0.sp)
+                    }
+                }
+                Spacer(Modifier.height(22.dp))
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(18.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    Column(Modifier.padding(22.dp)) {
+                        Text("Ulasan Terbaru", color = textDark, fontSize = 18.sp, fontWeight = FontWeight.Bold, letterSpacing = 0.sp)
+                        Spacer(Modifier.height(16.dp))
+                        Text("\"Seru banget ngobrol sama Adrian, recommended!\" Ã¢â‚¬â€ Bayu", color = textGray, fontSize = 16.sp, lineHeight = 24.sp, letterSpacing = 0.sp)
+                        HorizontalDivider(Modifier.padding(vertical = 12.dp), color = Color(0xFFE5EAF2))
+                        Text("\"Ramah dan aktif, cocok buat diskusi santai.\" Ã¢â‚¬â€ Sekar", color = textGray, fontSize = 16.sp, lineHeight = 24.sp, letterSpacing = 0.sp)
+                        HorizontalDivider(Modifier.padding(vertical = 12.dp), color = Color(0xFFE5EAF2))
+                        Text("\"Kopinya enak, obrolannya lebih enak lagi Ã°Å¸Ëœâ€ž\" Ã¢â‚¬â€ Seno", color = textGray, fontSize = 16.sp, lineHeight = 24.sp, letterSpacing = 0.sp)
+                    }
+                }
+                Spacer(Modifier.height(52.dp))
+            }
+        }
+    }
+}
+
+@Composable
+fun LogoutConfirmScreen(
+    onBackClick: () -> Unit = {},
+    onLogoutConfirm: () -> Unit = {},
+    onHomeClick: () -> Unit = {},
+    onFriendsClick: () -> Unit = {},
+    onActivitiesClick: () -> Unit = {},
+    onMessagesClick: () -> Unit = {},
+    onProfileClick: () -> Unit = {}
+) {
+    val bg = Color(0xFFF6F8FC)
+    val blue = Color(0xFF006AA6)
+    val textDark = Color(0xFF20242C)
+    val textGray = Color(0xFF4F5866)
+    Scaffold(
+        containerColor = bg,
+        bottomBar = {
+            TemuinBottomBar(
+                selectedMenu = "Profil",
+                onHomeClick = onHomeClick,
+                onFriendsClick = onFriendsClick,
+                onActivitiesClick = onActivitiesClick,
+                onMessagesClick = onMessagesClick,
+                onProfileClick = onProfileClick
+            )
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier.fillMaxSize().padding(paddingValues).background(bg).statusBarsPadding().padding(horizontal = 22.dp, vertical = 18.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            DetailProfileHeader(title = "Keluar", blue = blue, textDark = textDark, onBackClick = onBackClick)
+            Spacer(Modifier.height(80.dp))
+            Box(Modifier.size(96.dp).clip(CircleShape).background(Color(0xFFFFE5E5)), contentAlignment = Alignment.Center) {
+                Icon(Icons.Outlined.Logout, contentDescription = null, tint = Color(0xFFB51F25), modifier = Modifier.size(50.dp))
+            }
+            Spacer(Modifier.height(32.dp))
+            Text("Yakin ingin keluar?", color = textDark, fontSize = 24.sp, fontWeight = FontWeight.Bold, letterSpacing = 0.sp)
+            Spacer(Modifier.height(12.dp))
+            Text("Kamu akan kembali ke layar masuk dan perlu login ulang.", color = textGray, fontSize = 17.sp, lineHeight = 25.sp, letterSpacing = 0.sp)
+            Spacer(Modifier.height(44.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth().height(56.dp).clip(RoundedCornerShape(14.dp)).background(Color(0xFFB51F25)).clickable(onClick = onLogoutConfirm),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(Icons.Outlined.Logout, contentDescription = null, tint = Color.White, modifier = Modifier.size(26.dp))
+                Spacer(Modifier.width(10.dp))
+                Text("Ya, Keluar", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold, letterSpacing = 0.sp)
+            }
+            Spacer(Modifier.height(18.dp))
+            Text("Batal", color = blue, fontSize = 18.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.sp, modifier = Modifier.clickable(onClick = onBackClick))
+        }
+    }
+}
+
+@Composable
+fun NotificationsScreen(
+    onBackClick: () -> Unit = {},
+    onHomeClick: () -> Unit = {},
+    onFriendsClick: () -> Unit = {},
+    onActivitiesClick: () -> Unit = {},
+    onMessagesClick: () -> Unit = {},
+    onProfileClick: () -> Unit = {}
+) {
+    val bg = Color(0xFFF6F8FC)
+    val blue = Color(0xFF006AA6)
+    val textDark = Color(0xFF20242C)
+    val textGray = Color(0xFF4F5866)
+    val notifications = listOf(
+        "Bayu A mengirim ajakan" to "Kopi & Diskusi Santai Ã¢â‚¬Â¢ 2 jam lalu",
+        "Aktivitas baru di dekatmu" to "Workshop UI/UX Ã¢â‚¬Â¢ Sabtu, 16:00",
+        "Sekar P menerima ajakanmu" to "Jogging Bareng Ã¢â‚¬Â¢ Kemarin",
+        "Rating baru untukmu" to "Ã¢Â­Â 5.0 dari Seno Ã¢â‚¬Â¢ 2 hari lalu"
+    )
+    Scaffold(
+        containerColor = bg,
+        bottomBar = {
+            TemuinBottomBar(
+                selectedMenu = "Profil",
+                onHomeClick = onHomeClick,
+                onFriendsClick = onFriendsClick,
+                onActivitiesClick = onActivitiesClick,
+                onMessagesClick = onMessagesClick,
+                onProfileClick = onProfileClick
+            )
+        }
+    ) { paddingValues ->
+        LazyColumn(
+            modifier = Modifier.fillMaxSize().padding(paddingValues).background(bg).statusBarsPadding(),
+            contentPadding = PaddingValues(horizontal = 22.dp, vertical = 18.dp)
+        ) {
+            item {
+                DetailProfileHeader(title = "Notifikasi", blue = blue, textDark = textDark, onBackClick = onBackClick)
+            }
+            item {
+                Spacer(Modifier.height(16.dp))
+                notifications.forEachIndexed { i, (title, desc) ->
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+                    ) {
+                        Row(Modifier.padding(horizontal = 20.dp, vertical = 18.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Box(Modifier.size(44.dp).clip(CircleShape).background(Color(0xFFEAF4FF)), contentAlignment = Alignment.Center) {
+                                Icon(Icons.Outlined.Notifications, contentDescription = null, tint = blue, modifier = Modifier.size(26.dp))
+                            }
+                            Spacer(Modifier.width(14.dp))
+                            Column(Modifier.weight(1f)) {
+                                Text(title, color = textDark, fontSize = 17.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 0.sp)
+                                Spacer(Modifier.height(4.dp))
+                                Text(desc, color = textGray, fontSize = 14.sp, letterSpacing = 0.sp)
+                            }
+                        }
+                    }
+                    if (i != notifications.lastIndex) { Spacer(Modifier.height(8.dp)) }
+                }
+                Spacer(Modifier.height(52.dp))
+            }
+        }
     }
 }

@@ -292,7 +292,10 @@ class MainActivity : ComponentActivity() {
                         onInterestsClick = { destination = AppDestination.ProfileInterests },
                         onActivityHistoryClick = { destination = AppDestination.ProfileActivityHistory },
                         onSettingsClick = { destination = AppDestination.ProfileSettings },
-                        onHelpCenterClick = { destination = AppDestination.ProfileHelpCenter }
+                        onHelpCenterClick = { destination = AppDestination.ProfileHelpCenter },
+                        onRatingClick = { destination = AppDestination.ProfileRating },
+                        onLogoutClick = { destination = AppDestination.ProfileLogout },
+                        onNotificationClick = { destination = AppDestination.ProfileNotifications }
                     )
 
                     AppDestination.ProfileDetailMe -> MyProfileDetailScreen(
@@ -361,6 +364,34 @@ class MainActivity : ComponentActivity() {
                         subtitle = "Temukan jawaban dan bantuan seputar penggunaan temu.in.",
                         items = listOf("Cara membuat ajakan", "Mengatur preferensi teman", "Melaporkan masalah", "Hubungi tim temu.in"),
                         actionText = "Hubungi Bantuan",
+                        onBackClick = { destination = AppDestination.Profile },
+                        onHomeClick = { destination = AppDestination.Home },
+                        onFriendsClick = { destination = AppDestination.FilterFriends },
+                        onActivitiesClick = { destination = AppDestination.MyActivities },
+                        onMessagesClick = { destination = AppDestination.Messages },
+                        onProfileClick = { destination = AppDestination.Profile }
+                    )
+
+                    AppDestination.ProfileRating -> ProfilRatingScreen(
+                        onBackClick = { destination = AppDestination.Profile },
+                        onHomeClick = { destination = AppDestination.Home },
+                        onFriendsClick = { destination = AppDestination.FilterFriends },
+                        onActivitiesClick = { destination = AppDestination.MyActivities },
+                        onMessagesClick = { destination = AppDestination.Messages },
+                        onProfileClick = { destination = AppDestination.Profile }
+                    )
+
+                    AppDestination.ProfileLogout -> LogoutConfirmScreen(
+                        onBackClick = { destination = AppDestination.Profile },
+                        onLogoutConfirm = { destination = AppDestination.Auth },
+                        onHomeClick = { destination = AppDestination.Home },
+                        onFriendsClick = { destination = AppDestination.FilterFriends },
+                        onActivitiesClick = { destination = AppDestination.MyActivities },
+                        onMessagesClick = { destination = AppDestination.Messages },
+                        onProfileClick = { destination = AppDestination.Profile }
+                    )
+
+                    AppDestination.ProfileNotifications -> NotificationsScreen(
                         onBackClick = { destination = AppDestination.Profile },
                         onHomeClick = { destination = AppDestination.Home },
                         onFriendsClick = { destination = AppDestination.FilterFriends },
@@ -1190,6 +1221,9 @@ private enum class AppDestination {
     ProfileActivityHistory,
     ProfileSettings,
     ProfileHelpCenter,
+    ProfileRating,
+    ProfileLogout,
+    ProfileNotifications,
     ActivityDetail,
     ActivityConfirmed
 }
