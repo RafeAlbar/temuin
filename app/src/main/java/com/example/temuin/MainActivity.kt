@@ -286,6 +286,86 @@ class MainActivity : ComponentActivity() {
                         onFriendsClick = { destination = AppDestination.FilterFriends },
                         onActivitiesClick = { destination = AppDestination.MyActivities },
                         onMessagesClick = { destination = AppDestination.Messages },
+                        onProfileClick = { destination = AppDestination.Profile },
+                        onProfileDetailClick = { destination = AppDestination.ProfileDetailMe },
+                        onEditProfileClick = { destination = AppDestination.EditProfile },
+                        onInterestsClick = { destination = AppDestination.ProfileInterests },
+                        onActivityHistoryClick = { destination = AppDestination.ProfileActivityHistory },
+                        onSettingsClick = { destination = AppDestination.ProfileSettings },
+                        onHelpCenterClick = { destination = AppDestination.ProfileHelpCenter }
+                    )
+
+                    AppDestination.ProfileDetailMe -> MyProfileDetailScreen(
+                        onBackClick = { destination = AppDestination.Profile },
+                        onHomeClick = { destination = AppDestination.Home },
+                        onFriendsClick = { destination = AppDestination.FilterFriends },
+                        onActivitiesClick = { destination = AppDestination.MyActivities },
+                        onMessagesClick = { destination = AppDestination.Messages },
+                        onProfileClick = { destination = AppDestination.Profile }
+                    )
+
+                    AppDestination.EditProfile -> ProfileMenuDetailScreen(
+                        title = "Edit Profil",
+                        subtitle = "Perbarui data utama yang tampil di profil kamu.",
+                        items = listOf("Nama lengkap: Adrian Rafe", "Bio: Product Manager | Coffee Enthusiast", "Lokasi: Jakarta Selatan", "Email: adrian.rafe@email.com"),
+                        actionText = "Simpan Perubahan",
+                        onBackClick = { destination = AppDestination.Profile },
+                        onHomeClick = { destination = AppDestination.Home },
+                        onFriendsClick = { destination = AppDestination.FilterFriends },
+                        onActivitiesClick = { destination = AppDestination.MyActivities },
+                        onMessagesClick = { destination = AppDestination.Messages },
+                        onProfileClick = { destination = AppDestination.Profile }
+                    )
+
+                    AppDestination.ProfileInterests -> ProfileMenuDetailScreen(
+                        title = "Minat & Hobi",
+                        subtitle = "Atur minat agar rekomendasi teman dan aktivitas lebih cocok.",
+                        items = listOf("Kopi", "Diskusi Produk", "Komunitas Kreatif", "Jogging", "Workshop"),
+                        actionText = "Kelola Minat",
+                        onBackClick = { destination = AppDestination.Profile },
+                        onHomeClick = { destination = AppDestination.Home },
+                        onFriendsClick = { destination = AppDestination.FilterFriends },
+                        onActivitiesClick = { destination = AppDestination.MyActivities },
+                        onMessagesClick = { destination = AppDestination.Messages },
+                        onProfileClick = { destination = AppDestination.Profile }
+                    )
+
+                    AppDestination.ProfileActivityHistory -> ProfileMenuDetailScreen(
+                        title = "Riwayat Aktivitas",
+                        subtitle = "Aktivitas yang pernah kamu ikuti melalui temu.in.",
+                        items = listOf("Kopi & Diskusi Santai", "Workshop UI/UX Weekend", "Jogging Bareng GBK", "Nonton Komunitas Film"),
+                        actionText = "Lihat Semua",
+                        onBackClick = { destination = AppDestination.Profile },
+                        onHomeClick = { destination = AppDestination.Home },
+                        onFriendsClick = { destination = AppDestination.FilterFriends },
+                        onActivitiesClick = { destination = AppDestination.MyActivities },
+                        onMessagesClick = { destination = AppDestination.Messages },
+                        onProfileClick = { destination = AppDestination.Profile }
+                    )
+
+                    AppDestination.ProfileSettings -> ProfileMenuDetailScreen(
+                        title = "Pengaturan",
+                        subtitle = "Kelola preferensi akun, privasi, dan notifikasi.",
+                        items = listOf("Notifikasi: Aktif", "Privasi profil: Publik", "Bahasa: Indonesia", "Keamanan akun"),
+                        actionText = "Simpan Pengaturan",
+                        onBackClick = { destination = AppDestination.Profile },
+                        onHomeClick = { destination = AppDestination.Home },
+                        onFriendsClick = { destination = AppDestination.FilterFriends },
+                        onActivitiesClick = { destination = AppDestination.MyActivities },
+                        onMessagesClick = { destination = AppDestination.Messages },
+                        onProfileClick = { destination = AppDestination.Profile }
+                    )
+
+                    AppDestination.ProfileHelpCenter -> ProfileMenuDetailScreen(
+                        title = "Pusat Bantuan",
+                        subtitle = "Temukan jawaban dan bantuan seputar penggunaan temu.in.",
+                        items = listOf("Cara membuat ajakan", "Mengatur preferensi teman", "Melaporkan masalah", "Hubungi tim temu.in"),
+                        actionText = "Hubungi Bantuan",
+                        onBackClick = { destination = AppDestination.Profile },
+                        onHomeClick = { destination = AppDestination.Home },
+                        onFriendsClick = { destination = AppDestination.FilterFriends },
+                        onActivitiesClick = { destination = AppDestination.MyActivities },
+                        onMessagesClick = { destination = AppDestination.Messages },
                         onProfileClick = { destination = AppDestination.Profile }
                     )
 
@@ -1104,6 +1184,12 @@ private enum class AppDestination {
     AddActivity,
     Messages,
     Profile,
+    ProfileDetailMe,
+    EditProfile,
+    ProfileInterests,
+    ProfileActivityHistory,
+    ProfileSettings,
+    ProfileHelpCenter,
     ActivityDetail,
     ActivityConfirmed
 }

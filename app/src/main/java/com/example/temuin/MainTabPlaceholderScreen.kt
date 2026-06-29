@@ -1,5 +1,6 @@
 package com.example.temuin
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -21,12 +22,17 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.Badge
+import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.HelpOutline
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.Interests
+import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.Logout
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Person
@@ -42,6 +48,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -209,12 +216,22 @@ fun ProfilePlaceholderScreen(
     onFriendsClick: () -> Unit = {},
     onActivitiesClick: () -> Unit = {},
     onMessagesClick: () -> Unit = {},
-    onProfileClick: () -> Unit = {}
+    onProfileClick: () -> Unit = {},
+    onProfileDetailClick: () -> Unit = {},
+    onEditProfileClick: () -> Unit = {},
+    onInterestsClick: () -> Unit = {},
+    onActivityHistoryClick: () -> Unit = {},
+    onSettingsClick: () -> Unit = {},
+    onHelpCenterClick: () -> Unit = {}
 ) {
+    val context = LocalContext.current
     val bg = Color(0xFFF6F8FC)
     val blue = Color(0xFF006AA6)
     val textDark = Color(0xFF20242C)
     val textGray = Color(0xFF4F5866)
+    val showProfileAction: (String) -> Unit = { action ->
+        Toast.makeText(context, action, Toast.LENGTH_SHORT).show()
+    }
 
     Scaffold(
         containerColor = bg,
@@ -249,7 +266,10 @@ fun ProfilePlaceholderScreen(
 
             item {
                 Spacer(modifier = Modifier.height(60.dp))
-                Box(contentAlignment = Alignment.BottomEnd) {
+                Box(
+                    modifier = Modifier.clickable(onClick = onProfileDetailClick),
+                    contentAlignment = Alignment.BottomEnd
+                ) {
                     AvatarCircle(
                         initials = "AR",
                         colors = listOf(Color(0xFFFFD9B8), Color(0xFF18202A)),
@@ -270,7 +290,8 @@ fun ProfilePlaceholderScreen(
                     color = textDark,
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Normal,
-                    letterSpacing = 0.sp
+                    letterSpacing = 0.sp,
+                    modifier = Modifier.clickable(onClick = onProfileDetailClick)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
@@ -283,17 +304,34 @@ fun ProfilePlaceholderScreen(
 
             item {
                 Spacer(modifier = Modifier.height(34.dp))
-                ProfileStatsCard(blue = blue, textGray = textGray)
+                ProfileStatsCard(
+                    blue = blue,
+                    textGray = textGray,
+                    onFriendsClick = { onFriendsClick() },
+                    onActivitiesClick = { onActivitiesClick() },
+                    onRatingClick = { showProfileAction("Rating profil: 4.9") }
+                )
             }
 
             item {
                 Spacer(modifier = Modifier.height(28.dp))
-                ProfileMenuCard(blue = blue, textDark = textDark)
+                ProfileMenuCard(
+                    blue = blue,
+                    textDark = textDark,
+                    onEditProfileClick = onEditProfileClick,
+                    onInterestsClick = onInterestsClick,
+                    onActivityHistoryClick = onActivityHistoryClick,
+                    onSettingsClick = onSettingsClick,
+                    onHelpCenterClick = onHelpCenterClick
+                )
             }
 
             item {
                 Spacer(modifier = Modifier.height(42.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    modifier = Modifier.clickable { showProfileAction("Logout ditekan") },
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Icon(
                         imageVector = Icons.Outlined.Logout,
                         contentDescription = null,
@@ -311,6 +349,375 @@ fun ProfilePlaceholderScreen(
                 }
                 Spacer(modifier = Modifier.height(48.dp))
             }
+        }
+    }
+}
+
+@Composable
+fun ProfileMenuDetailScreen(
+    title: String,
+    subtitle: String,
+    items: List<String>,
+    actionText: String,
+    onBackClick: () -> Unit = {},
+    onHomeClick: () -> Unit = {},
+    onFriendsClick: () -> Unit = {},
+    onActivitiesClick: () -> Unit = {},
+    onMessagesClick: () -> Unit = {},
+    onProfileClick: () -> Unit = {}
+) {
+    val context = LocalContext.current
+    val bg = Color(0xFFF6F8FC)
+    val blue = Color(0xFF006AA6)
+    val textDark = Color(0xFF20242C)
+    val textGray = Color(0xFF4F5866)
+
+    Scaffold(
+        containerColor = bg,
+        bottomBar = {
+            TemuinBottomBar(
+                selectedMenu = "Profil",
+                onHomeClick = onHomeClick,
+                onFriendsClick = onFriendsClick,
+                onActivitiesClick = onActivitiesClick,
+                onMessagesClick = onMessagesClick,
+                onProfileClick = onProfileClick
+            )
+        }
+    ) { paddingValues ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .background(bg)
+                .statusBarsPadding(),
+            contentPadding = PaddingValues(horizontal = 22.dp, vertical = 18.dp)
+        ) {
+            item {
+                DetailProfileHeader(
+                    title = title,
+                    blue = blue,
+                    textDark = textDark,
+                    onBackClick = onBackClick
+                )
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(22.dp))
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(18.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    Column(modifier = Modifier.padding(22.dp)) {
+                        Text(
+                            text = subtitle,
+                            color = textGray,
+                            fontSize = 17.sp,
+                            lineHeight = 25.sp,
+                            letterSpacing = 0.sp
+                        )
+                        Spacer(modifier = Modifier.height(22.dp))
+                        items.forEachIndexed { index, item ->
+                            ProfileMenuDetailRow(
+                                number = index + 1,
+                                text = item,
+                                blue = blue,
+                                textDark = textDark
+                            )
+                            if (index != items.lastIndex) {
+                                HorizontalDivider(color = Color(0xFFE5EAF2))
+                            }
+                        }
+                    }
+                }
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(24.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                        .clip(RoundedCornerShape(14.dp))
+                        .background(blue)
+                        .clickable {
+                            Toast.makeText(context, "$actionText ditekan", Toast.LENGTH_SHORT).show()
+                        },
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = actionText,
+                        color = Color.White,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 0.sp
+                    )
+                }
+                Spacer(modifier = Modifier.height(52.dp))
+            }
+        }
+    }
+}
+
+@Composable
+private fun ProfileMenuDetailRow(
+    number: Int,
+    text: String,
+    blue: Color,
+    textDark: Color
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .size(34.dp)
+                .clip(CircleShape)
+                .background(Color(0xFFEAF4FF)),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = number.toString(),
+                color = blue,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 0.sp
+            )
+        }
+        Spacer(modifier = Modifier.width(14.dp))
+        Text(
+            text = text,
+            color = textDark,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.SemiBold,
+            letterSpacing = 0.sp,
+            modifier = Modifier.weight(1f)
+        )
+    }
+}
+
+@Composable
+fun MyProfileDetailScreen(
+    onBackClick: () -> Unit = {},
+    onHomeClick: () -> Unit = {},
+    onFriendsClick: () -> Unit = {},
+    onActivitiesClick: () -> Unit = {},
+    onMessagesClick: () -> Unit = {},
+    onProfileClick: () -> Unit = {}
+) {
+    val bg = Color(0xFFF6F8FC)
+    val blue = Color(0xFF006AA6)
+    val textDark = Color(0xFF20242C)
+    val textGray = Color(0xFF4F5866)
+
+    Scaffold(
+        containerColor = bg,
+        bottomBar = {
+            TemuinBottomBar(
+                selectedMenu = "Profil",
+                onHomeClick = onHomeClick,
+                onFriendsClick = onFriendsClick,
+                onActivitiesClick = onActivitiesClick,
+                onMessagesClick = onMessagesClick,
+                onProfileClick = onProfileClick
+            )
+        }
+    ) { paddingValues ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .background(bg)
+                .statusBarsPadding(),
+            contentPadding = PaddingValues(horizontal = 22.dp, vertical = 18.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            item {
+                DetailProfileHeader(
+                    title = "Profil Saya",
+                    blue = blue,
+                    textDark = textDark,
+                    onBackClick = onBackClick
+                )
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(26.dp))
+                AvatarCircle(
+                    initials = "AR",
+                    colors = listOf(Color(0xFFFFD9B8), Color(0xFF18202A)),
+                    modifier = Modifier.size(144.dp),
+                    fontSize = 38.sp
+                )
+                Spacer(modifier = Modifier.height(22.dp))
+                Text(
+                    text = "Adrian Rafe",
+                    color = textDark,
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 0.sp
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Product Manager | Coffee Enthusiast",
+                    color = textGray,
+                    fontSize = 18.sp,
+                    letterSpacing = 0.sp
+                )
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(28.dp))
+                ProfileInfoCard(blue = blue, textDark = textDark, textGray = textGray)
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(22.dp))
+                ProfileAboutCard(textDark = textDark, textGray = textGray)
+                Spacer(modifier = Modifier.height(52.dp))
+            }
+        }
+    }
+}
+
+@Composable
+private fun DetailProfileHeader(
+    title: String,
+    blue: Color,
+    textDark: Color,
+    onBackClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(58.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            imageVector = Icons.Outlined.ArrowBack,
+            contentDescription = "Kembali",
+            tint = textDark,
+            modifier = Modifier
+                .align(Alignment.CenterStart)
+                .size(34.dp)
+                .clickable(onClick = onBackClick)
+        )
+        Text(
+            text = title,
+            color = blue,
+            fontSize = 28.sp,
+            fontWeight = FontWeight.ExtraBold,
+            letterSpacing = 0.sp
+        )
+    }
+}
+
+@Composable
+private fun ProfileInfoCard(
+    blue: Color,
+    textDark: Color,
+    textGray: Color
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(14.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column(modifier = Modifier.padding(vertical = 8.dp)) {
+            ProfileInfoRow(Icons.Outlined.Email, "Email", "adrian.rafe@email.com", blue, textDark, textGray)
+            HorizontalDivider(color = Color(0xFFE5EAF2))
+            ProfileInfoRow(Icons.Outlined.LocationOn, "Lokasi", "Jakarta Selatan", blue, textDark, textGray)
+            HorizontalDivider(color = Color(0xFFE5EAF2))
+            ProfileInfoRow(Icons.Outlined.Badge, "Status", "Online dan siap bertemu", blue, textDark, textGray)
+            HorizontalDivider(color = Color(0xFFE5EAF2))
+            ProfileInfoRow(Icons.Outlined.CalendarMonth, "Bergabung", "Juni 2026", blue, textDark, textGray)
+        }
+    }
+}
+
+@Composable
+private fun ProfileInfoRow(
+    icon: ImageVector,
+    label: String,
+    value: String,
+    blue: Color,
+    textDark: Color,
+    textGray: Color
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 22.dp, vertical = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .size(46.dp)
+                .clip(CircleShape)
+                .background(Color(0xFFEAF4FF)),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = blue,
+                modifier = Modifier.size(26.dp)
+            )
+        }
+        Spacer(modifier = Modifier.width(16.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = label,
+                color = textGray,
+                fontSize = 14.sp,
+                letterSpacing = 0.sp
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = value,
+                color = textDark,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.SemiBold,
+                letterSpacing = 0.sp
+            )
+        }
+    }
+}
+
+@Composable
+private fun ProfileAboutCard(
+    textDark: Color,
+    textGray: Color
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(14.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column(modifier = Modifier.padding(22.dp)) {
+            Text(
+                text = "Tentang Saya",
+                color = textDark,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 0.sp
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+            Text(
+                text = "Suka ngobrol soal produk, kopi, dan komunitas kreatif. Terbuka untuk bertemu teman baru lewat aktivitas santai di sekitar Jakarta.",
+                color = textGray,
+                fontSize = 17.sp,
+                lineHeight = 25.sp,
+                letterSpacing = 0.sp
+            )
         }
     }
 }
@@ -555,7 +962,13 @@ private fun OnlineDot() {
 }
 
 @Composable
-private fun ProfileStatsCard(blue: Color, textGray: Color) {
+private fun ProfileStatsCard(
+    blue: Color,
+    textGray: Color,
+    onFriendsClick: () -> Unit = {},
+    onActivitiesClick: () -> Unit = {},
+    onRatingClick: () -> Unit = {}
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(14.dp),
@@ -568,11 +981,11 @@ private fun ProfileStatsCard(blue: Color, textGray: Color) {
                 .padding(vertical = 24.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            ProfileStat("128", "Friends", blue, textGray, Modifier.weight(1f))
+            ProfileStat("128", "Friends", blue, textGray, Modifier.weight(1f), onFriendsClick)
             StatDivider()
-            ProfileStat("42", "Activities", blue, textGray, Modifier.weight(1f))
+            ProfileStat("42", "Activities", blue, textGray, Modifier.weight(1f), onActivitiesClick)
             StatDivider()
-            ProfileStat("4.9 ★", "Rating", Color(0xFFE29A00), textGray, Modifier.weight(1f))
+            ProfileStat("4.9 ?", "Rating", Color(0xFFE29A00), textGray, Modifier.weight(1f), onRatingClick)
         }
     }
 }
@@ -583,9 +996,13 @@ private fun ProfileStat(
     label: String,
     valueColor: Color,
     labelColor: Color,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {}
 ) {
-    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        modifier = modifier.clickable(onClick = onClick),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Text(
             text = value,
             color = valueColor,
@@ -615,7 +1032,15 @@ private fun StatDivider() {
 }
 
 @Composable
-private fun ProfileMenuCard(blue: Color, textDark: Color) {
+private fun ProfileMenuCard(
+    blue: Color,
+    textDark: Color,
+    onEditProfileClick: () -> Unit = {},
+    onInterestsClick: () -> Unit = {},
+    onActivityHistoryClick: () -> Unit = {},
+    onSettingsClick: () -> Unit = {},
+    onHelpCenterClick: () -> Unit = {}
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(14.dp),
@@ -623,15 +1048,15 @@ private fun ProfileMenuCard(blue: Color, textDark: Color) {
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column {
-            ProfileMenuItem("Edit Profil", Icons.Outlined.Edit, blue, textDark)
+            ProfileMenuItem("Edit Profil", Icons.Outlined.Edit, blue, textDark, onClick = onEditProfileClick)
             HorizontalDivider(color = Color(0xFFE5EAF2))
-            ProfileMenuItem("Minat & Hobi", Icons.Outlined.Interests, blue, textDark)
+            ProfileMenuItem("Minat & Hobi", Icons.Outlined.Interests, blue, textDark, onClick = onInterestsClick)
             HorizontalDivider(color = Color(0xFFE5EAF2))
-            ProfileMenuItem("Riwayat Aktivitas", Icons.Outlined.History, blue, textDark)
+            ProfileMenuItem("Riwayat Aktivitas", Icons.Outlined.History, blue, textDark, onClick = onActivityHistoryClick)
             HorizontalDivider(color = Color(0xFFE5EAF2))
-            ProfileMenuItem("Pengaturan", Icons.Outlined.Settings, blue, textDark)
+            ProfileMenuItem("Pengaturan", Icons.Outlined.Settings, blue, textDark, onClick = onSettingsClick)
             HorizontalDivider(color = Color(0xFFE5EAF2))
-            ProfileMenuItem("Pusat Bantuan", Icons.Outlined.HelpOutline, blue, textDark)
+            ProfileMenuItem("Pusat Bantuan", Icons.Outlined.HelpOutline, blue, textDark, onClick = onHelpCenterClick)
         }
     }
 }
@@ -641,12 +1066,14 @@ private fun ProfileMenuItem(
     title: String,
     icon: ImageVector,
     blue: Color,
-    textDark: Color
+    textDark: Color,
+    onClick: () -> Unit = {}
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(82.dp)
+            .clickable(onClick = onClick)
             .padding(horizontal = 28.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
